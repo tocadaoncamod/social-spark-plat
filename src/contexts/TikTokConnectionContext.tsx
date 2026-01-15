@@ -43,7 +43,7 @@ export function TikTokConnectionProvider({ children }: { children: ReactNode }) 
         .from("tiktok_apps")
         .select("*")
         .eq("user_id", user.id)
-        .in("status", ["active", "inactive"])
+        .in("status", ["active", "connected", "inactive"])
         .order("created_at", { ascending: false })
         .maybeSingle();
 
@@ -55,7 +55,7 @@ export function TikTokConnectionProvider({ children }: { children: ReactNode }) 
   });
 
   const value: TikTokConnectionContextType = {
-    isConnected: !!data && data.status === "active",
+    isConnected: !!data && (data.status === "active" || data.status === "connected"),
     connectedApp: data || null,
     isLoading,
     error: error as Error | null,

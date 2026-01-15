@@ -329,46 +329,55 @@ serve(async (req) => {
         break;
 
       case "exchange_code": {
-        // Exchange authorization code for access token
-        const tokenUrl = "https://open.tiktokapis.com/v2/oauth/token/";
+        // Exchange authorization code for access token using TikTok Shop API v2
+        // Reference: https://partner.tiktokshop.com/docv2/page/6507ead7b99d5302be949ba9
+        const tokenUrl = "https://auth.tiktok-shops.com/api/v2/token/get";
         
-        const tokenBody = new URLSearchParams({
-          client_key: credentials.app_key,
-          client_secret: credentials.app_secret || "",
-          code: params.code,
-          grant_type: "authorization_code",
-          redirect_uri: params.redirect_uri,
-        });
+        const tokenBody = {
+          app_key: credentials.app_key,
+          app_secret: credentials.app_secret || "",
+          auth_code: params.code,
+          grant_type: "authorized_code",
+        };
 
-        console.log("Exchanging code for tokens...");
+        console.log("Exchanging code for tokens via TikTok Shop API v2...");
+        console.log("Token URL:", tokenUrl);
+        console.log("App Key:", credentials.app_key);
         
         const tokenResponse = await fetch(tokenUrl, {
           method: "POST",
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
-          body: tokenBody.toString(),
+          body: JSON.stringify(tokenBody),
         });
 
         const tokenData = await tokenResponse.json();
         console.log("Token response:", JSON.stringify(tokenData));
 
-        if (tokenData.error) {
+        if (tokenData.code !== 0) {
+          console.error("Token exchange failed:", tokenData);
           return new Response(
-            JSON.stringify({ error: tokenData.error, error_description: tokenData.error_description }),
+            JSON.stringify({ 
+              error: tokenData.message || "Token exchange failed", 
+              code: tokenData.code,
+              details: tokenData 
+            }),
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
 
-        if (tokenData.access_token) {
-          const expiresAt = new Date(Date.now() + (tokenData.expires_in || 86400) * 1000).toISOString();
+        const tokenInfo = tokenData.data;
+        
+        if (tokenInfo?.access_token) {
+          const expiresAt = new Date(Date.now() + (tokenInfo.access_token_expire_in || 86400) * 1000).toISOString();
           
           // Update the app with tokens
           const { error: updateError } = await supabaseClient
             .from("tiktok_apps")
             .update({
-              access_token: tokenData.access_token,
-              refresh_token: tokenData.refresh_token,
+              access_token: tokenInfo.access_token,
+              refresh_token: tokenInfo.refresh_token,
               token_expires_at: expiresAt,
               status: "connected",
               updated_at: new Date().toISOString(),
@@ -380,15 +389,15 @@ serve(async (req) => {
           }
 
           result = {
-            access_token: tokenData.access_token,
-            refresh_token: tokenData.refresh_token,
+            access_token: tokenInfo.access_token,
+            refresh_token: tokenInfo.refresh_token,
             expires_at: expiresAt,
-            open_id: tokenData.open_id,
-            scope: tokenData.scope,
+            open_id: tokenInfo.open_id,
+            seller_name: tokenInfo.seller_name,
           };
         } else {
           return new Response(
-            JSON.stringify({ error: "No access token received" }),
+            JSON.stringify({ error: "No access token received", details: tokenData }),
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
@@ -396,43 +405,55 @@ serve(async (req) => {
       }
 
       case "refresh_token": {
-        // Refresh access token
-        const refreshUrl = "https://open.tiktokapis.com/v2/oauth/token/";
+        // Refresh access token using TikTok Shop API v2
+        const refreshUrl = "https://auth.tiktok-shops.com/api/v2/token/refresh";
         
-        const refreshBody = new URLSearchParams({
-          client_key: credentials.app_key,
-          client_secret: credentials.app_secret || "",
-          grant_type: "refresh_token",
+        const refreshBody = {
+          app_key: credentials.app_key,
+          app_secret: credentials.app_secret || "",
           refresh_token: credentials.refresh_token || params.refresh_token,
-        });
+          grant_type: "refresh_token",
+        };
+
+        console.log("Refreshing token via TikTok Shop API v2...");
 
         const refreshResponse = await fetch(refreshUrl, {
           method: "POST",
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
           },
-          body: refreshBody.toString(),
+          body: JSON.stringify(refreshBody),
         });
 
         const refreshData = await refreshResponse.json();
+        console.log("Refresh response:", JSON.stringify(refreshData));
 
-        if (refreshData.access_token) {
-          const expiresAt = new Date(Date.now() + (refreshData.expires_in || 86400) * 1000).toISOString();
+        if (refreshData.code !== 0) {
+          return new Response(
+            JSON.stringify({ error: "Failed to refresh token", details: refreshData }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+
+        const refreshInfo = refreshData.data;
+
+        if (refreshInfo?.access_token) {
+          const expiresAt = new Date(Date.now() + (refreshInfo.access_token_expire_in || 86400) * 1000).toISOString();
           
           // Update the app with new tokens
           await supabaseClient
             .from("tiktok_apps")
             .update({
-              access_token: refreshData.access_token,
-              refresh_token: refreshData.refresh_token,
+              access_token: refreshInfo.access_token,
+              refresh_token: refreshInfo.refresh_token,
               token_expires_at: expiresAt,
               updated_at: new Date().toISOString(),
             })
             .eq("id", appId);
 
           result = {
-            access_token: refreshData.access_token,
-            refresh_token: refreshData.refresh_token,
+            access_token: refreshInfo.access_token,
+            refresh_token: refreshInfo.refresh_token,
             expires_at: expiresAt,
           };
         } else {

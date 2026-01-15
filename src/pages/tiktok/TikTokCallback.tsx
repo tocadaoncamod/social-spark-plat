@@ -43,51 +43,55 @@ export default function TikTokCallback() {
       }
 
       try {
+        setMessage("Trocando código por tokens...");
+        
+        // Get the app ID from state parameter
+        const appId = state;
+        
+        if (!appId) {
+          throw new Error("App ID não encontrado no state");
+        }
+        
         // Exchange code for tokens via Edge Function
         const { data, error: fnError } = await supabase.functions.invoke("tiktok-shop-api", {
           body: {
             action: "exchange_code",
+            appId: appId,
             code,
             state,
             redirect_uri: `${window.location.origin}/tiktok/callback`
           }
         });
 
-        if (fnError) throw fnError;
+        console.log("Token exchange response:", data);
+
+        if (fnError) {
+          console.error("Function error:", fnError);
+          throw fnError;
+        }
+
+        if (data?.error) {
+          throw new Error(data.error_description || data.error);
+        }
 
         if (data?.access_token) {
-          // Update the app with the new tokens
-          const appId = state; // We use state to pass the app ID
-          
-          if (appId) {
-            const { error: updateError } = await supabase
-              .from("tiktok_apps")
-              .update({
-                access_token: data.access_token,
-                refresh_token: data.refresh_token,
-                token_expires_at: data.expires_at,
-                status: "active",
-                updated_at: new Date().toISOString()
-              })
-              .eq("id", appId)
-              .eq("user_id", user.id);
-
-            if (updateError) throw updateError;
-          }
-
+          // The Edge Function already updates the database, but we update status locally too
           setStatus("success");
-          setMessage("Conectado com sucesso! Redirecionando...");
-          toast.success("TikTok conectado com sucesso!");
-          setTimeout(() => navigate("/tiktok/settings"), 2000);
+          setMessage("TikTok Shop conectado com sucesso! Redirecionando...");
+          toast.success("🎉 TikTok Shop conectado! Seus dados serão sincronizados.");
+          
+          // Redirect to dashboard to see the connected status
+          setTimeout(() => navigate("/tiktok"), 2000);
         } else {
-          throw new Error("Tokens não recebidos");
+          throw new Error("Access token não recebido na resposta");
         }
       } catch (err) {
         console.error("OAuth callback error:", err);
+        const errorMessage = err instanceof Error ? err.message : "Erro desconhecido";
         setStatus("error");
-        setMessage("Erro ao processar autorização. Tente novamente.");
-        toast.error("Erro na conexão");
-        setTimeout(() => navigate("/tiktok/settings"), 3000);
+        setMessage(`Erro: ${errorMessage}. Tente novamente.`);
+        toast.error(`Erro na conexão: ${errorMessage}`);
+        setTimeout(() => navigate("/tiktok/settings"), 4000);
       }
     };
 

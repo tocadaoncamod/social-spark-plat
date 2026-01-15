@@ -94,10 +94,23 @@ export default function TikTokSettings() {
   const startOAuthFlow = (appId: string, clientKey: string) => {
     const redirectUri = encodeURIComponent(`${window.location.origin}/tiktok/callback`);
     const state = appId; // Pass app ID to callback
-    const scopes = "user.info.basic,video.list,video.upload";
     
-    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${clientKey}&response_type=code&scope=${scopes}&redirect_uri=${redirectUri}&state=${state}`;
+    // TikTok Shop API v2 scopes for Seller Central
+    const scopes = encodeURIComponent([
+      "user.info.basic",
+      "video.list", 
+      "video.upload",
+      "product.read",
+      "product.write",
+      "order.read",
+      "order.write",
+      "seller.info.read"
+    ].join(","));
     
+    // Use TikTok Shop OAuth v2 endpoint for Seller Central
+    const authUrl = `https://auth.tiktok-shops.com/api/v2/oauth/authorize?app_key=${clientKey}&response_type=code&scope=${scopes}&redirect_uri=${redirectUri}&state=${state}`;
+    
+    console.log("Starting OAuth flow with URL:", authUrl);
     window.location.href = authUrl;
   };
   
