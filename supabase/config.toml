@@ -1,0 +1,28 @@
+project_id = "mpozlvvzodkybdhqemuy"
+
+[functions.tiktok-ai-insights]
+verify_jwt = false
+
+[functions.voc-analysis]
+verify_jwt = false
+
+[functions.ai-scripts]
+verify_jwt = false
+
+[functions.whatsapp-sender]
+verify_jwt = false
+
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+[functions.whatsapp-instance]
+verify_jwt = false
+
+[functions.onboarding-analyze]
+verify_jwt = false
+
+[functions.facebook-automation]
+verify_jwt = false
+
+[functions.facebook-ad-creator]
+verify_jwt = false
