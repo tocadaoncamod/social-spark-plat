@@ -2,10 +2,12 @@ import { TikTokShopLayout } from "@/components/tiktok/TikTokShopLayout";
 import { StatsCard } from "@/components/tiktok/StatsCard";
 import { AIInsightsPanel } from "@/components/tiktok/AIInsightsPanel";
 import { AdvancedAIInsights } from "@/components/tiktok/AdvancedAIInsights";
+import { TikTokConnectionBanner } from "@/components/tiktok/TikTokConnectionBanner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTikTokDashboardStats } from "@/hooks/useTikTokData";
+import { useTikTokConnection } from "@/contexts/TikTokConnectionContext";
 import { DollarSign, ShoppingCart, TrendingUp, Package, Users, Crown } from "lucide-react";
 import { 
   LineChart, 
@@ -16,6 +18,8 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from "recharts";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('pt-BR', {
@@ -33,6 +37,21 @@ const tierColors = {
 
 export default function TikTokDashboard() {
   const { data: stats, isLoading } = useTikTokDashboardStats();
+  const { isConnected } = useTikTokConnection();
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      // Simulate sync - in real implementation this would call the sync API
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      toast.success("Dados sincronizados com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao sincronizar dados");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const chartData = stats?.salesByDate
     ? Object.entries(stats.salesByDate)
@@ -44,6 +63,13 @@ export default function TikTokDashboard() {
   return (
     <TikTokShopLayout>
       <div className="space-y-6">
+        {/* Connection Status Banner */}
+        <TikTokConnectionBanner 
+          showSyncButton={true}
+          onSync={handleSync}
+          isSyncing={isSyncing}
+        />
+
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
