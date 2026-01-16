@@ -23,6 +23,7 @@ export interface TikTokProduct {
   promotion_discount?: number;
   promotion_start_date?: string;
   promotion_end_date?: string;
+  marketing_content?: any;
   created_at: string;
   updated_at: string;
 }
@@ -145,7 +146,7 @@ export function useTikTokProducts() {
         .from('tiktok_products')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as TikTokProduct[];
     },
@@ -159,7 +160,7 @@ export function useTikTokProducts() {
         .insert({ ...product, user_id: user!.id })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -174,7 +175,7 @@ export function useTikTokProducts() {
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -207,7 +208,7 @@ export function useTikTokSales() {
           influencer:tiktok_influencers(*)
         `)
         .order('sale_date', { ascending: false });
-      
+
       if (error) throw error;
       return data as TikTokSale[];
     },
@@ -227,7 +228,7 @@ export function useTikTokInfluencers() {
         .from('tiktok_influencers')
         .select('*')
         .order('total_sales', { ascending: false });
-      
+
       if (error) throw error;
       return data as TikTokInfluencer[];
     },
@@ -241,7 +242,7 @@ export function useTikTokInfluencers() {
         .insert({ ...influencer, user_id: user!.id })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -266,7 +267,7 @@ export function useTikTokContent() {
           influencer:tiktok_influencers(*)
         `)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as TikTokContent[];
     },
@@ -280,7 +281,7 @@ export function useTikTokContent() {
         .insert({ ...content, user_id: user!.id })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -301,7 +302,7 @@ export function useTikTokFinancial() {
         .from('tiktok_financial')
         .select('*')
         .order('transaction_date', { ascending: false });
-      
+
       if (error) throw error;
       return data as TikTokFinancial[];
     },
@@ -321,7 +322,7 @@ export function useTikTokInsights() {
         .from('tiktok_ai_insights')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as TikTokInsight[];
     },
@@ -334,7 +335,7 @@ export function useTikTokInsights() {
         .from('tiktok_ai_insights')
         .update({ is_read: true })
         .eq('id', id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tiktok-insights'] }),
@@ -355,7 +356,7 @@ export function useTikTokApps() {
         .from('tiktok_apps')
         .select('*')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as TikTokApp[];
     },
@@ -369,7 +370,7 @@ export function useTikTokApps() {
         .insert({ ...app, user_id: user!.id })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },

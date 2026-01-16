@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useTikTokProducts, TikTokProduct } from "@/hooks/useTikTokData";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Package, Edit, Trash2, Percent, Loader2 } from "lucide-react";
+import { Plus, Search, Package, Edit, Trash2, Percent, Loader2, Video, Sparkles } from "lucide-react";
 
 const statusColors = {
   active: "bg-green-500/10 text-green-500",
@@ -64,7 +64,7 @@ export default function TikTokProducts() {
 
   const filteredProducts = products?.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase()) ||
-                         product.sku?.toLowerCase().includes(search.toLowerCase());
+      product.sku?.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "all" || product.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -72,7 +72,7 @@ export default function TikTokProducts() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const productData = {
       name: formData.get('name') as string,
       description: formData.get('description') as string,
@@ -108,7 +108,7 @@ export default function TikTokProducts() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-    
+
     try {
       await deleteProduct.mutateAsync(id);
       toast({ title: "Produto excluído com sucesso!" });
@@ -136,7 +136,7 @@ export default function TikTokProducts() {
               Gerencie seu catálogo de produtos do TikTok Shop
             </p>
           </div>
-          
+
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open);
             if (!open) setEditingProduct(null);
@@ -157,17 +157,17 @@ export default function TikTokProducts() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome do Produto *</Label>
-                    <Input 
-                      id="name" 
-                      name="name" 
-                      required 
+                    <Input
+                      id="name"
+                      name="name"
+                      required
                       defaultValue={editingProduct?.name}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="sku">SKU</Label>
-                    <Input 
-                      id="sku" 
+                    <Input
+                      id="sku"
                       name="sku"
                       defaultValue={editingProduct?.sku || ''}
                     />
@@ -176,8 +176,8 @@ export default function TikTokProducts() {
 
                 <div className="space-y-2">
                   <Label htmlFor="description">Descrição</Label>
-                  <Textarea 
-                    id="description" 
+                  <Textarea
+                    id="description"
                     name="description"
                     rows={3}
                     defaultValue={editingProduct?.description || ''}
@@ -187,10 +187,10 @@ export default function TikTokProducts() {
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
                     <Label htmlFor="price">Preço *</Label>
-                    <Input 
-                      id="price" 
-                      name="price" 
-                      type="number" 
+                    <Input
+                      id="price"
+                      name="price"
+                      type="number"
                       step="0.01"
                       required
                       defaultValue={editingProduct?.price}
@@ -198,19 +198,19 @@ export default function TikTokProducts() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="compare_at_price">Preço Comparativo</Label>
-                    <Input 
-                      id="compare_at_price" 
-                      name="compare_at_price" 
-                      type="number" 
+                    <Input
+                      id="compare_at_price"
+                      name="compare_at_price"
+                      type="number"
                       step="0.01"
                       defaultValue={editingProduct?.compare_at_price || ''}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="stock_quantity">Estoque *</Label>
-                    <Input 
-                      id="stock_quantity" 
-                      name="stock_quantity" 
+                    <Input
+                      id="stock_quantity"
+                      name="stock_quantity"
                       type="number"
                       required
                       defaultValue={editingProduct?.stock_quantity || 0}
@@ -221,8 +221,8 @@ export default function TikTokProducts() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="category">Categoria</Label>
-                    <Input 
-                      id="category" 
+                    <Input
+                      id="category"
                       name="category"
                       defaultValue={editingProduct?.category || ''}
                     />
@@ -245,8 +245,8 @@ export default function TikTokProducts() {
 
                 <div className="space-y-2">
                   <Label htmlFor="image_url">URL da Imagem</Label>
-                  <Input 
-                    id="image_url" 
+                  <Input
+                    id="image_url"
                     name="image_url"
                     type="url"
                     defaultValue={editingProduct?.image_url || ''}
@@ -260,9 +260,9 @@ export default function TikTokProducts() {
                   </h4>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="flex items-center space-x-2">
-                      <input 
-                        type="checkbox" 
-                        id="promotion_active" 
+                      <input
+                        type="checkbox"
+                        id="promotion_active"
                         name="promotion_active"
                         defaultChecked={editingProduct?.promotion_active}
                         className="h-4 w-4 rounded border-input"
@@ -271,9 +271,9 @@ export default function TikTokProducts() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="promotion_discount">Desconto (%)</Label>
-                      <Input 
-                        id="promotion_discount" 
-                        name="promotion_discount" 
+                      <Input
+                        id="promotion_discount"
+                        name="promotion_discount"
                         type="number"
                         step="0.01"
                         max="100"
@@ -284,14 +284,14 @@ export default function TikTokProducts() {
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4">
-                  <Button 
-                    type="button" 
+                  <Button
+                    type="button"
                     variant="outline"
                     onClick={() => setIsDialogOpen(false)}
                   >
                     Cancelar
                   </Button>
-                  <Button 
+                  <Button
                     type="submit"
                     disabled={createProduct.isPending || updateProduct.isPending}
                   >
@@ -361,6 +361,7 @@ export default function TikTokProducts() {
                       <TableHead>Estoque</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Promoção</TableHead>
+                      <TableHead>Marketing IA</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -370,8 +371,8 @@ export default function TikTokProducts() {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             {product.image_url ? (
-                              <img 
-                                src={product.image_url} 
+                              <img
+                                src={product.image_url}
                                 alt={product.name}
                                 className="h-10 w-10 rounded-lg object-cover"
                               />
@@ -420,6 +421,35 @@ export default function TikTokProducts() {
                             <span className="text-muted-foreground">-</span>
                           )}
                         </TableCell>
+                        <TableCell>
+                          {product.marketing_content?.viral_script ? (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="gap-2 border-primary/50 hover:bg-primary/10">
+                                  <Video className="h-3.5 w-3.5 text-primary" />
+                                  Ver Roteiro
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-lg">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center gap-2">
+                                    <Sparkles className="h-5 w-5 text-primary" />
+                                    Roteiro Viral: {product.name}
+                                  </DialogTitle>
+                                </DialogHeader>
+                                <div className="mt-4 p-4 bg-muted rounded-lg border font-mono text-sm whitespace-pre-wrap leading-relaxed">
+                                  {product.marketing_content.viral_script}
+                                </div>
+                                <div className="flex justify-between items-center text-xs text-muted-foreground mt-2">
+                                  <span>Estratégia: {product.marketing_content.strategy || 'China-Viral'}</span>
+                                  <span>Gerado em: {new Date(product.marketing_content.generated_at).toLocaleDateString()}</span>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          ) : (
+                            <Badge variant="secondary" className="text-[10px] opacity-40">Sem roteiro</Badge>
+                          )}
+                        </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button
@@ -449,7 +479,7 @@ export default function TikTokProducts() {
                 <Package className="h-12 w-12 text-muted-foreground/50 mb-4" />
                 <h3 className="font-medium">Nenhum produto encontrado</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {search || statusFilter !== "all" 
+                  {search || statusFilter !== "all"
                     ? "Tente ajustar os filtros de busca"
                     : "Comece adicionando seu primeiro produto"}
                 </p>

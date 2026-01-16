@@ -12,19 +12,20 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAgentes, Agente } from "@/hooks/useAgentes";
+import { AgenteEliteLibrary } from "@/components/agentes/AgenteEliteLibrary";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { 
-  Bot, 
-  Edit, 
-  Trash2, 
-  Youtube, 
-  Instagram, 
-  Facebook, 
-  MessageCircle, 
-  Music2, 
-  Send, 
+import {
+  Bot,
+  Edit,
+  Trash2,
+  Youtube,
+  Instagram,
+  Facebook,
+  MessageCircle,
+  Music2,
+  Send,
   Linkedin,
   Sparkles,
   Settings2,
@@ -77,7 +78,7 @@ export default function Agentes() {
     ia_primaria: "gemini",
     ia_secundaria: "",
   });
-  
+
   // Test agent state
   const [testingAgente, setTestingAgente] = useState<Agente | null>(null);
   const [testMessage, setTestMessage] = useState("");
@@ -96,7 +97,7 @@ export default function Agentes() {
 
   const handleSave = () => {
     if (!editingAgente) return;
-    
+
     updateAgente.mutate({
       id: editingAgente.id,
       updates: {
@@ -125,10 +126,10 @@ export default function Agentes() {
 
   const executeTest = async () => {
     if (!testingAgente || !testMessage.trim()) return;
-    
+
     setIsTesting(true);
     setTestResponse("");
-    
+
     try {
       const { data, error } = await supabase.functions.invoke("test-agent", {
         body: {
@@ -140,12 +141,12 @@ export default function Agentes() {
       });
 
       if (error) throw error;
-      
+
       if (data?.error) {
         toast.error(data.error);
         return;
       }
-      
+
       setTestResponse(data.response);
     } catch (error) {
       console.error("Test error:", error);
@@ -172,7 +173,7 @@ export default function Agentes() {
               Gerencie seus agentes de IA por plataforma
             </p>
           </div>
-          <Button 
+          <Button
             onClick={() => navigate("/onboarding")}
             className="gap-2"
           >
@@ -223,6 +224,9 @@ export default function Agentes() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Elite Library Section */}
+        <AgenteEliteLibrary />
 
         {/* Agentes Grid */}
         {isLoading ? (
@@ -282,7 +286,7 @@ export default function Agentes() {
                         {agente.prompt_base.substring(0, 150)}...
                       </p>
                     </div>
-                    
+
                     {agente.conhecimentos && Object.keys(agente.conhecimentos).length > 0 && (
                       <div className="flex flex-wrap gap-1">
                         {Object.keys(agente.conhecimentos).slice(0, 3).map((key) => (
@@ -299,9 +303,9 @@ export default function Agentes() {
                     )}
 
                     <div className="flex gap-2 pt-2">
-                      <Button 
-                        variant="default" 
-                        size="sm" 
+                      <Button
+                        variant="default"
+                        size="sm"
                         className="flex-1 gap-1"
                         onClick={() => handleTest(agente)}
                         disabled={!agente.ativo}
@@ -309,9 +313,9 @@ export default function Agentes() {
                         <PlayCircle className="h-3.5 w-3.5" />
                         Testar
                       </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         className="gap-1"
                         onClick={() => handleEdit(agente)}
                       >
@@ -327,13 +331,13 @@ export default function Agentes() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Remover Agente</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Tem certeza que deseja remover o agente "{agente.nome}"? 
+                              Tem certeza que deseja remover o agente "{agente.nome}"?
                               Esta ação não pode ser desfeita.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction 
+                            <AlertDialogAction
                               onClick={() => handleDelete(agente.id)}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
@@ -362,7 +366,7 @@ export default function Agentes() {
                 Personalize o prompt e configurações do seu agente
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="nome">Nome do Agente</Label>
@@ -377,8 +381,8 @@ export default function Agentes() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>IA Primária</Label>
-                  <Select 
-                    value={editForm.ia_primaria} 
+                  <Select
+                    value={editForm.ia_primaria}
                     onValueChange={(value) => setEditForm({ ...editForm, ia_primaria: value })}
                   >
                     <SelectTrigger>
@@ -394,8 +398,8 @@ export default function Agentes() {
                 </div>
                 <div className="space-y-2">
                   <Label>IA Secundária (Backup)</Label>
-                  <Select 
-                    value={editForm.ia_secundaria} 
+                  <Select
+                    value={editForm.ia_secundaria}
                     onValueChange={(value) => setEditForm({ ...editForm, ia_secundaria: value })}
                   >
                     <SelectTrigger>
@@ -449,7 +453,7 @@ export default function Agentes() {
                 Envie uma mensagem de teste e veja a resposta do agente
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4 py-4">
               {/* Input Section */}
               <div className="space-y-2">
@@ -490,8 +494,8 @@ export default function Agentes() {
             </div>
 
             <div className="flex justify-between gap-2">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setTestMessage("");
                   setTestResponse("");
@@ -504,8 +508,8 @@ export default function Agentes() {
                 <Button variant="outline" onClick={() => setTestingAgente(null)}>
                   Fechar
                 </Button>
-                <Button 
-                  onClick={executeTest} 
+                <Button
+                  onClick={executeTest}
                   disabled={isTesting || !testMessage.trim()}
                   className="gap-2"
                 >
