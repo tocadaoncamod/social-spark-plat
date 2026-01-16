@@ -5,8 +5,8 @@ const isDev = require('electron-is-dev');
 let mainWindow;
 let tray;
 
-// URL do app Lovable Cloud
-const APP_URL = 'https://1c8fdeb2-dd31-4d4d-84b3-5d479b4e46d3.lovableproject.com?forceHideBadge=true';
+// URL do app Pública (Vercel)
+const APP_URL = 'https://social-spark-platform-main.vercel.app';
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -33,7 +33,7 @@ function createWindow() {
   // Mostrar janela quando carregar
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    
+
     // Notificação de boas-vindas
     if (Notification.isSupported()) {
       new Notification({
@@ -125,7 +125,7 @@ function createWindow() {
 
 function createTray() {
   tray = new Tray(path.join(__dirname, 'assets', 'icon.png'));
-  
+
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '🐆 Abrir Toca da Onça',
@@ -158,7 +158,7 @@ function createTray() {
 
   tray.setToolTip('Toca da Onça Agente');
   tray.setContextMenu(contextMenu);
-  
+
   tray.on('double-click', () => {
     mainWindow.show();
     mainWindow.focus();
@@ -206,16 +206,16 @@ ipcMain.handle('show-notification', (event, { title, body }) => {
 // Auto-updater (para futuras atualizações automáticas)
 if (!isDev) {
   const { autoUpdater } = require('electron-updater');
-  
+
   autoUpdater.checkForUpdatesAndNotify();
-  
+
   autoUpdater.on('update-available', () => {
     new Notification({
       title: 'Atualização Disponível',
       body: 'Uma nova versão está sendo baixada...'
     }).show();
   });
-  
+
   autoUpdater.on('update-downloaded', () => {
     new Notification({
       title: 'Atualização Pronta',

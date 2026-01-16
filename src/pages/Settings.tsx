@@ -7,14 +7,16 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  User, 
-  Key, 
-  Bell, 
+import {
+  User,
+  Key,
+  Bell,
   Shield,
   Camera,
-  Save
+  Save,
+  Wallet
 } from "lucide-react";
+import { TONPaymentCard } from "@/components/finance/TONPaymentCard";
 
 export default function Settings() {
   return (
@@ -44,6 +46,10 @@ export default function Settings() {
           <TabsTrigger value="security" className="gap-2">
             <Shield className="h-4 w-4" />
             Security
+          </TabsTrigger>
+          <TabsTrigger value="payments" className="gap-2">
+            <Wallet className="h-4 w-4" />
+            Global Payments (TON)
           </TabsTrigger>
         </TabsList>
 
@@ -213,6 +219,10 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="payments">
+          <TONPaymentCard />
         </TabsContent>
       </Tabs>
     </DashboardLayout>

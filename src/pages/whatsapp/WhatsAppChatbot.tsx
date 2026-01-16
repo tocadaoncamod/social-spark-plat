@@ -25,6 +25,7 @@ import { useWhatsAppInstances } from "@/hooks/useWhatsAppInstances";
 import { PromptLibrary } from "@/components/whatsapp/PromptLibrary";
 import { PromptPreview } from "@/components/whatsapp/PromptPreview";
 import { useToast } from "@/hooks/use-toast";
+import { WhatsAppEliteLibrary } from "@/components/whatsapp/WhatsAppEliteLibrary";
 import {
   Bot,
   Sparkles,
@@ -33,6 +34,8 @@ import {
   Save,
   AlertCircle,
   Library,
+  Mic,
+  Volume2
 } from "lucide-react";
 
 interface ProfessionalPrompt {
@@ -185,6 +188,9 @@ export default function WhatsAppChatbot() {
           </CardContent>
         </Card>
 
+        {/* Elite Agents Library */}
+        <WhatsAppEliteLibrary onInstall={(prompt) => setFormData(prev => ({ ...prev, systemPrompt: prompt }))} />
+
         <div className="grid gap-6 lg:grid-cols-2">
           {/* AI Configuration */}
           <Card>
@@ -199,9 +205,9 @@ export default function WhatsAppChatbot() {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Prompt Library Button */}
-              <Button 
-                onClick={() => setShowLibrary(true)} 
-                variant="outline" 
+              <Button
+                onClick={() => setShowLibrary(true)}
+                variant="outline"
                 className="w-full gap-2 border-dashed border-2 hover:border-primary hover:bg-primary/5"
                 type="button"
               >
@@ -264,6 +270,47 @@ export default function WhatsAppChatbot() {
                     setFormData({ ...formData, autoClassifyLeads: checked })
                   }
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Voice IA Configuration (Elite) */}
+          <Card className="border-primary/40 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mic className="h-5 w-5 text-primary" />
+                Voz IA - ElevenLabs (Elite)
+              </CardTitle>
+              <CardDescription>
+                Habilite o Agente de Voz para responder com áudios ultra-realistas.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-card border border-primary/20">
+                <div>
+                  <p className="text-sm font-medium">Ativar Respostas por Áudio</p>
+                  <p className="text-xs text-muted-foreground">A IA enviará um áudio após o texto.</p>
+                </div>
+                <Switch />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs">ElevenLabs API Key</Label>
+                <Input type="password" placeholder="Chave da API ElevenLabs" className="text-xs" />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs">Voice ID (Clone)</Label>
+                <div className="flex gap-2">
+                  <Input placeholder="ID da Voz Clonada" className="text-xs" />
+                  <Button size="sm" variant="outline" className="h-8">
+                    <Volume2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[10px] text-blue-600 leading-relaxed italic">
+                💡 O Agente de Voz (EUA Style) funciona melhor com o prompt de "Vendedor de Voz Autônomo" instalado acima.
               </div>
             </CardContent>
           </Card>
@@ -406,10 +453,10 @@ export default function WhatsAppChatbot() {
       </Dialog>
 
       {/* Dialog de Preview/Instalação */}
-      <PromptPreview 
-        prompt={selectedPrompt} 
-        open={!!selectedPrompt} 
-        onClose={() => setSelectedPrompt(null)} 
+      <PromptPreview
+        prompt={selectedPrompt}
+        open={!!selectedPrompt}
+        onClose={() => setSelectedPrompt(null)}
         onConfirm={handleConfirmInstall}
       />
     </WhatsAppLayout>
