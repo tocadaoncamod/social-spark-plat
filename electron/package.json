@@ -16,7 +16,9 @@
   },
   "dependencies": {
     "electron-is-dev": "^2.0.0",
-    "electron-updater": "^6.1.7"
+    "electron-updater": "^6.1.7",
+    "puppeteer-core": "^22.0.0",
+    "electron-log": "^5.1.1"
   },
   "devDependencies": {
     "electron": "^28.1.0",
@@ -39,47 +41,45 @@
       {
         "from": "../dist",
         "to": "app",
-        "filter": [
-          "**/*"
-        ]
+        "filter": ["**/*"]
       }
     ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         },
         {
           "target": "portable",
-          "arch": [
-            "x64"
-          ]
+          "arch": ["x64"]
         }
       ],
+      "icon": "assets/icon.png",
       "artifactName": "${productName}-${version}-Setup.${ext}"
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.png",
+      "uninstallerIcon": "assets/icon.png",
+      "installerHeaderIcon": "assets/icon.png",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
       "shortcutName": "Toca da Onça Agente",
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "installerSidebar": "assets/installerSidebar.bmp",
+      "license": "assets/LICENSE.txt"
     },
     "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ],
+      "target": ["dmg", "zip"],
+      "icon": "assets/icon.png",
       "category": "public.app-category.business"
     },
     "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
+      "target": ["AppImage", "deb"],
+      "icon": "assets/icon.png",
       "category": "Office"
     }
   }
